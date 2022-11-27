@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Models\Listing;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ListingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,18 +16,50 @@ use App\Models\Listing;
 |
 */
 
-//All listings
-Route::get('/', function () {
-    return view('listings', [
-        'heading' => 'Latest Listings',
-        'listings' => Listing::all()
-    ]);
-});
+// Common Resoure Routes:
+// index - Show all listings
+// show - Show a single listing
+// create - Show form to create new listing
+// store - Store new listing
+// edit - Show form to edit listing
+// update - Update listing
+// destroy - Delete listing
 
+// Show all listings
+Route::get('/', [ListingController::class, 'index']);
 
-//SIngle listing
-Route::get('/listings/{id}', function($id) {
-    return view('listing', [
-        'listing' => Listing::find($id)
-    ]);
-});
+// Show create form
+Route::get('/listings/create', [ListingController::class, 'create'])->middleware('auth');
+
+// Store Listing data
+Route::post('/listings', [ListingController::class, 'store'])->middleware('auth');
+
+// Show edit form
+Route::get('/listings/{listing}/edit', [ListingController::class, 'edit'])->middleware('auth'); 
+
+// Update listing data
+Route::put('/listings/{listing}', [ListingController::class, 'update'])->middleware('auth');
+
+// Delete listing
+Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->middleware('auth');
+
+// Manage listings
+Route::get('/listings/manage', [ListingController::class, 'manage'])->middleware('auth');
+
+// Show single listing
+Route::get('/listings/{listing}', [ListingController::class, 'show']);
+
+// Show register create form
+Route::get('/register', [UserController::class, 'create'])->middleware('guest');
+
+// Create new users
+Route::post('/users', [UserController::class, 'store']);
+
+// Log user out
+Route::post('/logout', [UserController::class, 'logout'])->middleware('auth');
+
+// Show login form
+Route::get('/login', [UserController::class, 'login'])->name('login')->middleware('guest');
+
+// Log In User
+Route::post('/users/authenticate', [UserController::class, 'authenticate']);
